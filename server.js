@@ -5,6 +5,8 @@ const express = require('express');
 const db = require('./db/connection');
 const apiRoutes = require('./routes/apiRoutes');
 
+const application = require('./app');
+
 const PORT = process.env.PORT || 3001;
 const app = express();
 
@@ -25,6 +27,15 @@ db.connect(err => {
     if (err) throw err;
     console.log('Database connected.');
     app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}. Check it out here: http://localhost:3001`);
+        console.log(`
+Server running on port ${PORT}.
+        
+
+    ===================================
+            Employee Tracker
+        Developed by: Mitchell Frey
+    ===================================
+        `);
+        application.promptApp();
     });
 });
