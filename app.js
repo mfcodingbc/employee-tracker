@@ -45,7 +45,7 @@ const promptDepartment = () => {
       type: 'list',
       name: 'departmentMenu',
       message: 'Please choose what you would like to do with Departments:',
-      choices: ['View All Departments', 'Add a Department', 'Delete a Department', 'Return to Main Menu'],
+      choices: ['View All Departments', 'View Department Budget', 'Add a Department', 'Delete a Department', 'Return to Main Menu'],
       default: 'Return to Main Menu'
     }
   ])
@@ -62,6 +62,29 @@ const promptDepartment = () => {
 
       getApi(api_url);
       return promptDepartment();
+    }
+    if (menuChoice.departmentMenu === 'View Department Budget') {
+      return inquirer.prompt([
+        {
+          type: 'list',
+          name: 'departmentBudget',
+          message: 'Select a Department from which you would like to view the total budget.',
+          choices: []
+        }
+      ])
+      .then(response => {
+        const api_url = 'http://localhost:3001/api/budget/:id';
+
+        async function getApi(url) {
+          const response = await fetch(url);
+
+          var data = await response.json();
+          console.table('Budget', data)
+        }
+
+      getApi(api_url);
+      return promptDepartment();
+      })
     }
     if (menuChoice.departmentMenu === 'Add a Department') {
       return inquirer.prompt([
@@ -214,13 +237,39 @@ const promptEmployee = () => {
       type: 'list',
       name: 'employeeMenu',
       message: 'Please choose what you would like to do with Employees:',
-      choices: ['View All Employees', 'Add an Employee', 'Update an Employee', 'Delete an Employee', 'Return to Main Menu'],
+      choices: ['View All Employees', 'View Employees by Manager', 'View Employees by Department', 'Add an Employee', 'Update an Employee', 'Update a Manager', 'Delete an Employee', 'Return to Main Menu'],
       default: 'Return to Main Menu'
     }
   ])
   .then(menuChoice => {
     if (menuChoice.employeeMenu === 'View All Employees') {
       const api_url = 'http://localhost:3001/api/employees';
+
+      async function getApi(url) {
+        const response = await fetch(url);
+
+        var data = await response.json();
+        console.table('All Employees', data)
+      }
+
+      getApi(api_url);
+      return promptEmployee();
+    }
+    if (menuChoice.employeeMenu === 'View Employees by Manager') {
+      const api_url = 'http://localhost:3001/api/manager/:id';
+
+      async function getApi(url) {
+        const response = await fetch(url);
+
+        var data = await response.json();
+        console.table('All Employees', data)
+      }
+
+      getApi(api_url);
+      return promptEmployee();
+    }
+    if (menuChoice.employeeMenu === 'View Employees by Department') {
+      const api_url = 'http://localhost:3001/api/department/:id';
 
       async function getApi(url) {
         const response = await fetch(url);
@@ -285,8 +334,41 @@ const promptEmployee = () => {
         },
         {
           type: 'list',
-          name: 'EmployeeUpdateManager',
+          name: 'employeeUpdateManager',
           message: 'Select the new Manager for this Employee.',
+          choices: ['No Change']
+        }
+      ])
+      .then(responses => {
+        const api_url = 'http://localhost:3001/api/employee/:id';
+
+        async function updateApi(url) {
+          const response = await fetch(url);
+  
+          var data = await response.json();
+        }
+  
+        updateApi(api_url, responses);
+        return promptEmployee();
+      });
+    }
+    if (menuChoice.employeeMenu === 'Update a Manager') {
+      return inquirer.prompt([
+        {
+          type: 'list',
+          name: 'managerUpdate',
+          message: 'Select the Manager you wish to update.',
+          choices: []
+        },
+        {
+          type: 'input',
+          name: 'managerUpdateName',
+          message: 'Type in the new name of this Manager. If no new name, type in the old name.',
+        },
+        {
+          type: 'input',
+          name: 'managerUpdateRole',
+          message: 'Select the new Role for this Manager.',
           choices: ['No Change']
         }
       ])
